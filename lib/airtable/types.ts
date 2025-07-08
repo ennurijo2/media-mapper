@@ -1,15 +1,3 @@
-export interface MediaLocation {
-  id: string;
-  name: string;
-  longitude: number;
-  latitude: number;
-  location_name?: string;
-  natural_feature_name?: string;
-  city?: string;
-  region?: string;
-  country?: string;
-}
-
 export interface MediaImage {
   id: string;
   url: string;
@@ -31,9 +19,9 @@ export interface MediaImage {
 }
 
 export interface Media {
-  id: string;
   name: string;
   original_title?: string;
+  media_type?: string;
   director?: string;
   release_year?: number;
   description?: string;
@@ -45,4 +33,17 @@ export interface Media {
   references?: string;
   rights?: string;
   rights_statement_link?: string;
+}
+
+export interface MediaLocation {
+  id: string;
+  name: string;
+  longitude: number;
+  latitude: number;
+  location_name?: string;
+  natural_feature_name?: string;
+  city?: string;
+  region?: string;
+  country?: string;
+  media?: Media;
 }

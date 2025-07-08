@@ -7,14 +7,14 @@ import mapboxgl, {
   LngLatLike,
 } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { MediaPoint } from "@/lib/data/mock-media";
+import { MediaLocation } from "@/lib/data/mock-media";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
 const DEFAULT_CENTER = [-98.5795, 39.8283] as LngLatLike;
 const DEFAULT_ZOOM = 5;
 
-export default function Map({ data }: { data: MediaPoint[] }) {
+export default function Map({ data }: { data: MediaLocation[] }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);

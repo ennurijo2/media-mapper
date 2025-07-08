@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { CircleX, ZoomIn } from "lucide-react";
-import { MediaPoint } from "@/lib/data/mock-media";
+import { MediaLocation } from "@/lib/airtable/types";
 import { Metric } from "@/components/metric";
 import { useSearchParams } from "next/navigation";
 
 interface LocationDetailsProps {
-  data: MediaPoint[];
+  data: MediaLocation[];
 }
 
 const CONTAINER_CLASS = {
@@ -41,15 +41,16 @@ export function LocationDetails({ data }: LocationDetailsProps) {
     >
       <CardHeader>
         <Badge className="capitalize" variant="secondary">
-          {selectedMediaPoint?.media_type}
+          {selectedMediaPoint?.media?.media_type}
         </Badge>
         <div className="flex justify-between gap-1">
           <div>
             <CardTitle className="text-2xl font-bold">
-              {selectedMediaPoint?.title} ({selectedMediaPoint?.year})
+              {selectedMediaPoint?.media?.name} (
+              {selectedMediaPoint?.media?.release_year})
             </CardTitle>
             <p className="text-lg text-muted-foreground">
-              Created by {selectedMediaPoint?.creator}
+              Created by {selectedMediaPoint?.media?.director}
             </p>
           </div>
           <Button
@@ -62,11 +63,11 @@ export function LocationDetails({ data }: LocationDetailsProps) {
           </Button>
         </div>
 
-        {selectedMediaPoint?.media_thumbnail_url && (
+        {selectedMediaPoint?.media?.image?.url && (
           <div className="relative w-full h-50 mt-2">
             <Image
-              src={selectedMediaPoint.media_thumbnail_url || ""}
-              alt={selectedMediaPoint.title}
+              src={selectedMediaPoint.media.image.url || ""}
+              alt={selectedMediaPoint.media.name || ""}
               fill
               className="object-cover rounded"
             />
@@ -78,28 +79,31 @@ export function LocationDetails({ data }: LocationDetailsProps) {
         </Button>
       </CardHeader>
       <CardContent>
-        <Metric label="Language" value={selectedMediaPoint?.language} />
+        <Metric
+          label="Language"
+          value={selectedMediaPoint?.media?.language?.join(", ") || ""}
+        />
         <Metric
           label="Summary"
-          value={selectedMediaPoint?.description}
+          value={selectedMediaPoint?.media?.description || ""}
           className="mt-4"
         />
         <Metric
-          label="Nearest Municipality"
+          label="Nearest Location"
           value={`${selectedMediaPoint?.city}, ${selectedMediaPoint?.country}`}
           className="mt-4"
         />
 
         <Metric
           label="Subjects"
-          value={selectedMediaPoint?.subjects}
+          value={selectedMediaPoint?.media?.subjects?.join(", ") || ""}
           className="mt-4"
         />
 
         <Metric
-          href={selectedMediaPoint?.rights_url}
+          href={selectedMediaPoint?.media?.rights_statement_link || ""}
           label="Media Rights"
-          value={selectedMediaPoint?.rights}
+          value={selectedMediaPoint?.media?.rights || ""}
           className="mt-4"
         />
 
