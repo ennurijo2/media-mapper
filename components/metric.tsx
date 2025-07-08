@@ -31,12 +31,59 @@ export function Metric({
   href,
   label,
   value,
+  fallback = "None",
 }: {
   className?: string;
   href?: string;
   label: string;
-  value: string | string[];
+  value: string | string[] | null | undefined;
+  fallback?: string;
 }) {
+  // Handle null/undefined values
+  if (value === null || value === undefined || value === "") {
+    return (
+      <Container className={className}>
+        <Label>{label}</Label>
+        <p className="text-[16px]">{fallback}</p>
+      </Container>
+    );
+  }
+
+  // Handle array values
+  if (Array.isArray(value)) {
+    // Filter out null/undefined values and format each item
+    const filteredItems = value.filter(
+      (item) => item !== null && item !== undefined && item !== ""
+    );
+
+    if (filteredItems.length === 0) {
+      return (
+        <Container className={className}>
+          <Label>{label}</Label>
+          <p className="text-[16px]">{fallback}</p>
+        </Container>
+      );
+    }
+
+    return (
+      <Container className={className}>
+        <Label>{label}</Label>
+        <div className="flex flex-wrap gap-2">
+          {filteredItems.map((item, index) => (
+            <Badge
+              key={`${label}-${index}`}
+              variant="secondary"
+              className="capitalize"
+            >
+              {item}
+            </Badge>
+          ))}
+        </div>
+      </Container>
+    );
+  }
+
+  // Handle href values
   if (href) {
     return (
       <Container className={className}>
@@ -47,26 +94,14 @@ export function Metric({
           target="_blank"
           rel="noopener noreferrer"
         >
-          {value}
+          {value || fallback}
           <ExternalLink className="size-3.5" />
         </a>
       </Container>
     );
-  } else if (Array.isArray(value)) {
-    return (
-      <Container className={className}>
-        <Label>{label}</Label>
-        <div className="flex flex-wrap gap-2">
-          {value.map((v) => (
-            <Badge key={v} variant="secondary">
-              {v}
-            </Badge>
-          ))}
-        </div>
-      </Container>
-    );
   }
 
+  // Handle regular string values
   return (
     <Container className={className}>
       <Label>{label}</Label>

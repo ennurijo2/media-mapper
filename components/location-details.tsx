@@ -19,6 +19,34 @@ const CONTAINER_CLASS = {
   hidden: "shadow-none h-0 mt-0",
 };
 
+/**
+ * Builds a formatted location string from city, region, and country components.
+ *
+ * @param city - The city name (optional)
+ * @param region - The region/state/province name (optional)
+ * @param country - The country name (optional)
+ * @returns A comma-separated string of available location parts, or empty string if none provided
+ *
+ * @example
+ * buildLocationString("San Francisco", "California", "USA") // "San Francisco, California, USA"
+ * buildLocationString("Paris", undefined, "France") // "Paris, France"
+ * buildLocationString(null, null, "USA") // "USA"
+ * buildLocationString() // "" (empty string, will show "None" via Metric fallback)
+ */
+function buildLocationString(
+  city?: string,
+  region?: string,
+  country?: string
+): string {
+  // Filter out null, undefined, and empty string values
+  const locationParts = [city, region, country].filter(
+    (part) => part && part.trim() !== ""
+  );
+
+  // Join remaining parts with comma and space
+  return locationParts.join(", ");
+}
+
 export function LocationDetails({ data }: LocationDetailsProps) {
   const searchParams = useSearchParams();
   const mediaPointId = searchParams.get("mediaPointId");
@@ -79,10 +107,7 @@ export function LocationDetails({ data }: LocationDetailsProps) {
         </Button>
       </CardHeader>
       <CardContent>
-        <Metric
-          label="Language"
-          value={selectedMediaPoint?.media?.language?.join(", ") || ""}
-        />
+        <Metric label="Language" value={selectedMediaPoint?.media?.language} />
         <Metric
           label="Summary"
           value={selectedMediaPoint?.media?.description || ""}
@@ -90,13 +115,17 @@ export function LocationDetails({ data }: LocationDetailsProps) {
         />
         <Metric
           label="Nearest Location"
-          value={`${selectedMediaPoint?.city}, ${selectedMediaPoint?.country}`}
+          value={buildLocationString(
+            selectedMediaPoint?.city,
+            selectedMediaPoint?.region,
+            selectedMediaPoint?.country
+          )}
           className="mt-4"
         />
 
         <Metric
           label="Subjects"
-          value={selectedMediaPoint?.media?.subjects?.join(", ") || ""}
+          value={selectedMediaPoint?.media?.subjects}
           className="mt-4"
         />
 
