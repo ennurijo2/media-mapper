@@ -1,6 +1,8 @@
 import { getMediaPoints } from "../data";
 import { MediaTable } from "@/components/media-locations-table";
 
+export const dynamic = "force-dynamic";
+
 export default async function TablePage() {
   const mediaPoints = await getMediaPoints();
 

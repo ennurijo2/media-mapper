@@ -2,6 +2,8 @@ import { Map } from "@/components/map";
 import { LocationDetails } from "@/components/location-details";
 import { getMediaPoints } from "./data";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const mediaPoints = await getMediaPoints();
 
