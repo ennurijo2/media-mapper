@@ -1,4 +1,4 @@
-import Map from "@/components/map";
+import { Map } from "@/components/map";
 import { LocationDetails } from "@/components/location-details";
 import { getMediaPoints } from "./data";
 
@@ -7,7 +7,6 @@ export default async function Home() {
 
   return (
     <div className="w-full h-full">
-      {/* Desktop Layout */}
       <div className="relative">
         <LocationDetails data={mediaPoints} />
 

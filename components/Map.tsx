@@ -14,7 +14,7 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 const DEFAULT_CENTER = [-98.5795, 39.8283] as LngLatLike;
 const DEFAULT_ZOOM = 5;
 
-export default function Map({ data }: { data: MediaLocation[] }) {
+export function Map({ data }: { data: MediaLocation[] }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -152,7 +152,10 @@ export default function Map({ data }: { data: MediaLocation[] }) {
   }, [isMapLoaded, data]);
 
   /** =============================================== */
-  /** Pan the map to the selected media point */
+  /** Pan the map to the selected media point
+   *
+   * Also, change the color and radius of the selected media point
+   */
   /** =============================================== */
   useEffect(() => {
     if (!map.current || !isMapLoaded || !selectedMediaPoint) return;
@@ -160,6 +163,20 @@ export default function Map({ data }: { data: MediaLocation[] }) {
     map.current.flyTo({
       center: [selectedMediaPoint.longitude, selectedMediaPoint.latitude],
     });
+
+    map.current.setPaintProperty("media-points-layer", "circle-color", [
+      "case",
+      ["==", ["get", "id"], mediaPointId],
+      "#15cc09",
+      "#4264fb",
+    ]);
+
+    map.current.setPaintProperty("media-points-layer", "circle-radius", [
+      "case",
+      ["==", ["get", "id"], mediaPointId],
+      12,
+      8,
+    ]);
   }, [selectedMediaPoint, isMapLoaded]);
 
   return (
