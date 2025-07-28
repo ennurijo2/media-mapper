@@ -101,10 +101,6 @@ export function LocationDetails({ data }: LocationDetailsProps) {
             />
           </div>
         )}
-        <Button variant="default" className="w-full mt-2">
-          <ZoomIn />
-          Zoom To
-        </Button>
       </CardHeader>
       <CardContent>
         <Metric label="Language" value={selectedMediaPoint?.media?.language} />
