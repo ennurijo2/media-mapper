@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { CircleX, ZoomIn } from "lucide-react";
+import { CircleX } from "lucide-react";
 import { MediaLocation } from "@/lib/airtable/types";
 import { Metric } from "@/components/metric";
 import { useSearchParams } from "next/navigation";

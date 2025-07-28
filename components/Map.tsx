@@ -1,11 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import mapboxgl, {
-  GeoJSONSource,
-  LngLatBoundsLike,
-  LngLatLike,
-} from "mapbox-gl";
+import mapboxgl, { GeoJSONSource, LngLatBoundsLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MediaLocation } from "@/lib/airtable/types";
 import { CameraIcon } from "lucide-react";
@@ -67,6 +63,7 @@ export function Map({
         map.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** =============================================== */
@@ -172,14 +169,14 @@ export function Map({
 
       map.current.setPaintProperty("media-points-layer", "circle-color", [
         "case",
-        ["==", ["get", "id"], mediaPointId],
+        ["==", ["get", "id"], selectedMediaPoint.id],
         "#15cc09",
         "#4264fb",
       ]);
 
       map.current.setPaintProperty("media-points-layer", "circle-radius", [
         "case",
-        ["==", ["get", "id"], mediaPointId],
+        ["==", ["get", "id"], selectedMediaPoint.id],
         12,
         8,
       ]);
