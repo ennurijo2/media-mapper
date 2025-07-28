@@ -6,7 +6,7 @@ const MEDIA_LOCATION_TABLE_NAME = "Media Locations";
 export async function getMediaPoints() {
   const response = await base(MEDIA_LOCATION_TABLE_NAME)
     .select({
-      view: "Grid view",
+      view: process.env.AIRTABLE_VIEW_NAME,
     })
     .all()
     .then((records) => {
