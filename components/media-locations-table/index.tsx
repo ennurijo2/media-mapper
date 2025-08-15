@@ -34,6 +34,14 @@ import {
 import { Download } from "lucide-react";
 import { columns } from "@/components/media-locations-table/columns";
 import { exportToCSV } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface MediaTableProps {
   data: MediaLocation[];
@@ -106,6 +114,10 @@ export function MediaTable({ data }: MediaTableProps) {
       {/* Table */}
       <div className="rounded-md border">
         <Table aria-label="Media locations table" role="table">
+          <caption className="sr-only">
+            Table showing media locations with details including title, type, director, year, location, and subjects. 
+            Click column headers to sort. Click location links to view details on the map.
+          </caption>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
@@ -117,6 +129,7 @@ export function MediaTable({ data }: MediaTableProps) {
                     key={header.id}
                     style={{ width: header.getSize() }}
                     className="py-4"
+                    scope="col"
                   >
                     {header.isPlaceholder
                       ? null
@@ -161,20 +174,24 @@ export function MediaTable({ data }: MediaTableProps) {
       <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         {/* Rows per page - Hidden on mobile, shown on desktop */}
         <div className="hidden sm:flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
-          <select
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
+          <Label htmlFor="desktop-page-size">Rows per page</Label>
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
             }}
-            className="h-8 w-[70px] rounded border border-input bg-background px-2 py-1 text-sm"
           >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="desktop-page-size" size="sm" className="w-[70px]">
+              <SelectValue aria-label="Select number of rows to display per page" />
+            </SelectTrigger>
+            <SelectContent>
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Page info - Centered on mobile, positioned on desktop */}
@@ -250,20 +267,24 @@ export function MediaTable({ data }: MediaTableProps) {
 
         {/* Mobile-only rows per page selector */}
         <div className="flex sm:hidden items-center justify-center space-x-2 pt-2 border-t">
-          <p className="text-sm font-medium">Rows per page:</p>
-          <select
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
+          <Label htmlFor="mobile-page-size">Rows per page:</Label>
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
             }}
-            className="h-10 w-[80px] rounded border border-input bg-background px-3 py-2 text-sm"
           >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="mobile-page-size" className="w-[80px]">
+              <SelectValue aria-label="Select number of rows to display per page" />
+            </SelectTrigger>
+            <SelectContent>
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

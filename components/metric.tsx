@@ -89,7 +89,7 @@ export function Metric({
       <Container className={className}>
         <Label>{label}</Label>
         <a
-          className="text-sm flex items-center gap-1 underline"
+          className="text-sm flex items-center gap-1 text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
           href={href}
           target="_blank"
           rel="noopener noreferrer"

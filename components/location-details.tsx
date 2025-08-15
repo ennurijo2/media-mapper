@@ -8,6 +8,7 @@ import { CircleX } from "lucide-react";
 import { MediaLocation } from "@/lib/airtable/types";
 import { Metric } from "@/components/metric";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 interface LocationDetailsProps {
   data: MediaLocation[];
@@ -50,6 +51,25 @@ function buildLocationString(
 export function LocationDetails({ data }: LocationDetailsProps) {
   const searchParams = useSearchParams();
   const mediaPointId = searchParams.get("mediaPointId");
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Focus management and keyboard support
+  useEffect(() => {
+    if (mediaPointId && cardRef.current) {
+      // Focus the card when it opens
+      cardRef.current.focus();
+
+      // Handle Escape key to close
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
+          handleClose();
+        }
+      };
+
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [mediaPointId]);
 
   const selectedMediaPoint = mediaPointId
     ? data.find((point) => point.id === mediaPointId)
@@ -63,6 +83,12 @@ export function LocationDetails({ data }: LocationDetailsProps) {
 
   return (
     <Card
+      ref={cardRef}
+      tabIndex={mediaPointId ? 0 : -1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="location-title"
+      aria-describedby="location-description"
       className={`${
         mediaPointId ? CONTAINER_CLASS.visible : CONTAINER_CLASS.hidden
       }`}
@@ -73,11 +99,19 @@ export function LocationDetails({ data }: LocationDetailsProps) {
         </Badge>
         <div className="flex justify-between gap-1">
           <div>
-            <CardTitle className="text-xl font-bold">
+            <CardTitle
+              id="location-title"
+              className="text-xl font-bold"
+              role="heading"
+              aria-level={2}
+            >
               {selectedMediaPoint?.media?.name} (
               {selectedMediaPoint?.media?.release_year})
             </CardTitle>
-            <p className="text-md text-muted-foreground">
+            <p
+              id="location-description"
+              className="text-md text-muted-foreground"
+            >
               Created by {selectedMediaPoint?.media?.director}
             </p>
           </div>
@@ -90,7 +124,11 @@ export function LocationDetails({ data }: LocationDetailsProps) {
           <div className="relative w-full h-50 mt-2">
             <Image
               src={selectedMediaPoint.media.image.url || ""}
-              alt={selectedMediaPoint.media.name || ""}
+              alt={`Image from ${
+                selectedMediaPoint.media.name || "unknown media"
+              } (${
+                selectedMediaPoint.media.release_year || "unknown year"
+              }) by ${selectedMediaPoint.media.director || "unknown director"}`}
               fill
               className="object-cover rounded"
             />

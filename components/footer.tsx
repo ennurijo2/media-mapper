@@ -5,7 +5,7 @@ import UPennLogo from "@/public/upenn_logo.png";
 
 export default function Footer() {
   return (
-    <footer className="w-full max-w-7xl mx-auto bg-background">
+    <footer className="w-full max-w-7xl mx-auto bg-background" role="contentinfo">
       <div className="flex flex-col px-4 py-2 md:flex-row md:justify-between">
         <div className="flex flex-col items-center md:items-start">
           <span className="text-sm text-muted-foreground font-medium">
@@ -28,7 +28,7 @@ export default function Footer() {
           >
             <Image
               src={UPennLogo}
-              alt="University of Pennsylvania Logo"
+              alt="University of Pennsylvania official logo - link to Penn's website"
               fill
               className="object-contain"
             />

@@ -1,6 +1,5 @@
 import { base, convertKeysToSnakeCase } from "@/lib/airtable";
 
-// const MEDIA_TABLE_NAME = "Media";
 const MEDIA_LOCATION_TABLE_NAME = "Media Locations";
 
 export async function getMediaPoints() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import UPennLogo from "@/public/upenn_logo.png";
@@ -26,6 +26,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface InstructionItem {
   icon: React.ReactNode;
@@ -97,6 +98,20 @@ export default function InstructionsDialog() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const isMapView = pathname === "/";
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  // Focus management for modal
+  useEffect(() => {
+    if (open) {
+      // Focus will be handled by the Dialog component
+      return;
+    } else {
+      // Return focus to trigger button when dialog closes
+      if (triggerRef.current) {
+        triggerRef.current.focus();
+      }
+    }
+  }, [open]);
 
   const instructions = isMapView ? mapInstructions : tableInstructions;
   const viewTitle = isMapView ? "Map View" : "Table View";
@@ -107,15 +122,18 @@ export default function InstructionsDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button
-          className="text-sm font-medium transition-colors px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2"
+        <Button
+          ref={triggerRef}
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground hover:text-foreground"
           aria-expanded={open}
           aria-controls="instructions-dialog"
           aria-label={open ? "Close instructions" : "Open instructions"}
         >
           <HelpCircle className="w-4 h-4" />
           Help
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent
         id="instructions-dialog"

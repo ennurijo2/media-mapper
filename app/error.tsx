@@ -2,6 +2,7 @@
 
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Error({
   error,
@@ -30,21 +31,17 @@ export default function Error({
         </div>
 
         <div className="space-y-3">
-          <button
-            onClick={reset}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
+          <Button onClick={reset} className="w-full">
             <RefreshCw className="w-4 h-4" />
             Try again
-          </button>
+          </Button>
 
-          <Link
-            href="/"
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-          >
-            <Home className="w-4 h-4" />
-            Return home
-          </Link>
+          <Button variant="outline" className="w-full" asChild>
+            <Link href="/">
+              <Home className="w-4 h-4" />
+              Return home
+            </Link>
+          </Button>
         </div>
 
         {process.env.NODE_ENV === "development" && (

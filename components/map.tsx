@@ -5,6 +5,13 @@ import mapboxgl, { GeoJSONSource, LngLatBoundsLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MediaLocation } from "@/lib/airtable/types";
 import { CameraIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
@@ -55,6 +62,77 @@ export function Map({
     map.current.on("load", () => {
       setIsMapLoaded(true);
     });
+
+    // Make map container focusable and add keyboard navigation
+    const container = mapContainer.current;
+    if (container) {
+      container.setAttribute("tabindex", "0");
+      container.setAttribute("role", "application");
+      container.setAttribute(
+        "aria-label",
+        "Interactive map showing media locations. Use arrow keys to navigate, plus/minus to zoom."
+      );
+
+      // Keyboard navigation
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (!map.current) return;
+
+        // Dynamic step size based on zoom level
+        // Higher zoom = smaller steps for precision
+        // Lower zoom = larger steps for faster navigation
+        const zoom = map.current.getZoom();
+        let step = 4;
+
+        if (zoom >= 7 && zoom < 10) {
+          step = 1;
+        } else if (zoom >= 10 && zoom < 12) {
+          step = 0.1;
+        } else if (zoom >= 12) {
+          step = 0.01;
+        }
+
+        const center = map.current.getCenter();
+
+        switch (e.key) {
+          case "ArrowUp":
+            e.preventDefault();
+            map.current.panTo([center.lng, center.lat + step]);
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            map.current.panTo([center.lng, center.lat - step]);
+            break;
+          case "ArrowLeft":
+            e.preventDefault();
+            map.current.panTo([center.lng - step, center.lat]);
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            map.current.panTo([center.lng + step, center.lat]);
+            break;
+          case "+":
+          case "=":
+            e.preventDefault();
+            map.current.zoomIn();
+            break;
+          case "-":
+            e.preventDefault();
+            map.current.zoomOut();
+            break;
+        }
+      };
+
+      container.addEventListener("keydown", handleKeyDown);
+
+      // Cleanup keyboard handler
+      return () => {
+        container.removeEventListener("keydown", handleKeyDown);
+        if (map.current) {
+          map.current.remove();
+          map.current = null;
+        }
+      };
+    }
 
     // Clean up on unmount
     return () => {
@@ -189,26 +267,40 @@ export function Map({
 
       map.current.setPaintProperty("media-points-layer", "circle-radius", 8);
     }
-
-    console.log("selectedMediaPoint", selectedMediaPoint);
   }, [selectedMediaPoint, isMapLoaded]);
 
   return (
     <div className="w-full h-full relative">
-      <div ref={mapContainer} className="w-full h-full rounded-md" />
-      <div className="absolute top-26 shadow-lg rounded-sm right-2 z-10 bg-white w-8 h-8 flex items-center justify-center cursor-pointer">
-        <CameraIcon
-          onClick={() => {
-            const canvas = map.current?.getCanvas();
-            const dataURL = canvas?.toDataURL("image/png");
-            const link = document.createElement("a");
-            link.href = dataURL || "";
-            const timestamp = new Date().toISOString().split("T")[0];
-            link.download = `map-screenshot-${timestamp}.png`;
-            link.click();
-          }}
-        />
-      </div>
+      <div
+        ref={mapContainer}
+        className="w-full h-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      />
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute top-26 right-2 z-10 bg-white shadow-lg"
+              onClick={() => {
+                const canvas = map.current?.getCanvas();
+                const dataURL = canvas?.toDataURL("image/png");
+                const link = document.createElement("a");
+                link.href = dataURL || "";
+                const timestamp = new Date().toISOString().split("T")[0];
+                link.download = `map-screenshot-${timestamp}.png`;
+                link.click();
+              }}
+              aria-label="Take screenshot of current map view"
+            >
+              <CameraIcon className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Take screenshot of current map view</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "@/components/theme/mode-toggle";
 import InstructionsDialog from "@/components/instructions-dialog";
@@ -17,21 +16,14 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="w-full max-w-7xl mx-auto bg-background">
+    <header className="w-full max-w-7xl mx-auto bg-background" role="banner">
       <div className="flex flex-col justify-center items-center gap-2 p-2 md:flex-row md:justify-between md:p-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            {/* <Image
-              src="/logo.svg"
-              alt="Media Mapper Logo"
-              width={28}
-              height={28}
-              className="dark:invert text-primary"
-            /> */}
             <span className="text-xl font-medium">Media Mapper</span>
           </Link>
         </div>
-        <nav>
+        <nav role="navigation" aria-label="Main navigation">
           <ul className="flex items-center gap-2">
             <li>
               <Link
