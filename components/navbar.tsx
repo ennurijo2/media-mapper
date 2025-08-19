@@ -50,6 +50,19 @@ export default function Navbar({ title }: { title: string }) {
               </Link>
             </li>
             <li>
+              <Link
+                href="/about"
+                className={cn(
+                  BASE_CLASSNAMES,
+                  pathname === "/about"
+                    ? ACTIVE_CLASSNAMES
+                    : INACTIVE_CLASSNAMES
+                )}
+              >
+                About
+              </Link>
+            </li>
+            <li>
               <InstructionsDialog />
             </li>
             <li className="ml-4">

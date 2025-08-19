@@ -97,7 +97,7 @@ const tableInstructions: InstructionItem[] = [
 export default function InstructionsDialog() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const isMapView = pathname === "/";
+  const isTableView = pathname === "/table";
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Focus management for modal
@@ -113,9 +113,9 @@ export default function InstructionsDialog() {
     }
   }, [open]);
 
-  const instructions = isMapView ? mapInstructions : tableInstructions;
-  const viewTitle = isMapView ? "Map View" : "Table View";
-  const dataDescription = isMapView
+  const instructions = isTableView ? tableInstructions : mapInstructions;
+  const viewTitle = isTableView ? "Table View" : "Map View";
+  const dataDescription = isTableView
     ? "This interactive map displays media locations with geographical context. Each point represents a media object with location data extracted from the source material."
     : "This table view displays all media locations in a sortable, searchable format. Each row represents a media object with detailed information about its location and content.";
 
@@ -191,7 +191,7 @@ export default function InstructionsDialog() {
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     <strong>Funding:</strong> Media Mapper is made possible
-                    through funding provided by the
+                    through funding provided by the{" "}
                     <strong>
                       <a
                         href="https://www.upenn.edu/"
