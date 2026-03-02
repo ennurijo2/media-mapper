@@ -19,7 +19,7 @@ interface LocationDetailsProps {
 
 const CONTAINER_CLASS = {
   visible:
-    "fixed bottom-0 left-0 right-0 bg-background z-50 rounded-t-3xl rounded-b-none shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] max-h-[65vh] overflow-clip py-0 md:absolute md:top-18 md:left-6 md:right-auto md:w-96 md:max-w-[calc(50vw-2rem)] md:rounded-xl md:shadow-2xl md:!h-fit md:overflow-clip lg:top-22",
+    "fixed bottom-0 left-0 right-0 bg-background z-50 rounded-t-3xl rounded-b-none border-0 shadow-lg outline-none max-h-[65vh] overflow-clip py-0 md:absolute md:top-18 md:left-6 md:right-auto md:w-96 md:max-w-[calc(50vw-2rem)] md:rounded-xl md:shadow-2xl md:!h-fit md:overflow-clip lg:top-22",
   hidden: "hidden",
 };
 
