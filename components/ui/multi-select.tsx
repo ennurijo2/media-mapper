@@ -7,6 +7,7 @@ import { Button } from './button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './command';
 import { MultiSelectOption } from '@/lib/airtable/types';
+import { useIsTablet } from '../hooks/use-tablet';
 
 interface MultiSelectProps {
 	values: MultiSelectOption[],
@@ -16,6 +17,8 @@ interface MultiSelectProps {
 }
 
 export default function MultiSelect({ values, label, onSelect, selectedOptions }: MultiSelectProps) {
+	const isTablet = useIsTablet();
+
 	const [open, setOpen] = useState(false);
 
 	const handleSelection = (currentValue: string) => {
@@ -24,11 +27,11 @@ export default function MultiSelect({ values, label, onSelect, selectedOptions }
 	}
 
 	return (
-		<Popover open={open} onOpenChange={setOpen} modal={true}>
+		<Popover open={open} onOpenChange={setOpen} modal={isTablet}>
 			<PopoverTrigger asChild>
 				<div className='flex flex-col gap-1 min-w-32'>
 					<Label>{label}</Label>
-					<Button role="combobox" variant="outline" aria-expanded={open} className='w-full md:w-36'>
+					<Button role="combobox" variant="outline" aria-expanded={open} className='w-full lg:w-36'>
 						{selectedOptions.length > 0 ? `${selectedOptions.length} Selected` : 'None Selected'}
 						<ChevronsUpDown />
 					</Button>

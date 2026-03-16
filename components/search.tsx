@@ -18,7 +18,7 @@ export default function Search({ data }: { data: MediaLocation[] }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <Command className="w-full lg:w-[350px] p-0 border border-input">
         <PopoverTrigger asChild>
           <div className="max-w-[350px] justify-end p-0">
