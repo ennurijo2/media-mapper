@@ -304,7 +304,7 @@ export function Map({
     <div className="w-full h-full relative">
       <div
         ref={mapContainer}
-        className="w-full h-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        className="w-full h-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       />
       <TooltipProvider>
         <Tooltip>

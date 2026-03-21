@@ -3,11 +3,11 @@
 import { MapFilters, MediaLocation } from "@/lib/airtable/types";
 import { computeMapBounds } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
-import { LocationDetails } from "./location-details";
+import { useMemo, useState } from "react";
 import { Map } from "@/components/map";
-import Search from "./search";
-import Filters from "./filters";
+import { MapDrawer } from "./map-drawer";
+import { Filters } from "./filters";
+import { useIsTablet } from "./hooks/use-tablet";
 
 interface MapContainerProps {
   mediaPoints: MediaLocation[];
@@ -22,6 +22,17 @@ responsive while users refine search and filter criteria.
 
 export default function MapContainer({ mediaPoints }: MapContainerProps) {
   const searchParams = useSearchParams();
+  const mediaPointId = searchParams.get("mediaPointId");
+  const [prevMediaPointId, setPrevMediaPointId] = useState(mediaPointId);
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const isMobile = useIsTablet();
+
+  if (mediaPointId !== prevMediaPointId) {
+    setPrevMediaPointId(mediaPointId);
+    if (mediaPointId) {
+      setDrawerOpen(true);
+    }
+  }
 
   const filters: MapFilters = useMemo(
     () => ({
@@ -92,19 +103,30 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   );
 
   return (
-    <div className="px-4 py-2 w-full max-w-7xl mx-auto relative h-[calc(100vh-16rem)]">
-      <div className="flex p-2 gap-1 items-end lg:justify-between">
-        <Search data={filteredMediaPoints} />
-        <Filters
-          filters={filters}
-          countryOptions={countryOptions}
-          bodiesOfWaterOptions={bodiesOfWaterOptions}
-          minYear={minYear}
-          maxYear={maxYear}
+    <div className="w-full relative h-[calc(100vh-4rem)]">
+      <div className="relative w-full h-full overflow-hidden">
+        <Map data={filteredMediaPoints} bounds={mapBounds} filters={filters} />
+        <MapDrawer
+          filteredMediaPoints={filteredMediaPoints}
+          allMediaPoints={mediaPoints}
+          isOpen={drawerOpen}
+          onToggle={() => setDrawerOpen((prev) => !prev)}
         />
+        <div
+          className="absolute top-3 z-20 -translate-x-1/2"
+          style={{
+            left: !isMobile && drawerOpen ? "calc((100% + 24rem) / 2)" : "50%",
+          }}
+        >
+          <Filters
+            filters={filters}
+            countryOptions={countryOptions}
+            bodiesOfWaterOptions={bodiesOfWaterOptions}
+            minYear={minYear}
+            maxYear={maxYear}
+          />
+        </div>
       </div>
-      <Map data={filteredMediaPoints} bounds={mapBounds} filters={filters} />
-      <LocationDetails data={mediaPoints} />
     </div>
   );
 }

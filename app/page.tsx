@@ -7,7 +7,7 @@ export default async function Home() {
   const mediaPoints = await getMediaPoints();
 
   return (
-    <div className="w-full h-full relative mb-12">
+    <div className="w-full h-full relative">
       <h1 className="sr-only">Media Mapper - Interactive Map View</h1>
       <MapContainer mediaPoints={mediaPoints} />
     </div>

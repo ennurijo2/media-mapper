@@ -4,23 +4,22 @@ export default function Loading() {
   return (
     <div className="w-full h-full relative">
       <h1 className="sr-only">Media Mapper - Interactive Map View</h1>
-      <div className="px-4 py-2 w-full h-[calc(100vh-16rem)] max-w-7xl mx-auto relative">
+      <div className="w-full h-[calc(100vh-4rem)] relative">
+        <div className="relative w-full h-full overflow-hidden">
+          {/* Map skeleton */}
+          <Skeleton className="w-full h-full" />
 
-        {/* Search and filter skeleton */}
-        <div className="flex justify-between gap-2 mt-5 mb-2 mx-2">
-          <Skeleton className="h-12 w-full md:w-[350px] mb-1" />
-          <div className='gap-2 hidden md:flex'>
-            <Skeleton className="h-10 w-32" />
-            <Skeleton className="h-10 w-32" />
-            <Skeleton className="h-10 w-32" />
-            -
-            <Skeleton className="h-10 w-32" />
-            <Skeleton className="h-10 w-20" />
+          {/* Drawer skeleton - left panel on desktop, bottom sheet on mobile */}
+          <div className="absolute bottom-0 left-0 right-0 h-[60%] bg-background shadow-lg flex flex-col gap-3 p-3 rounded-t-2xl lg:top-0 lg:right-auto lg:bottom-0 lg:h-auto lg:w-96 lg:rounded-none">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="flex-1 w-full" />
           </div>
-          <Skeleton className="h-12 w-10 md:hidden" />
+
+          {/* Filters button skeleton */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10">
+            <Skeleton className="h-10 w-28 rounded-full" />
+          </div>
         </div>
-        {/* Map Loading Skeleton */}
-        <Skeleton className="w-full h-full rounded-md" />
       </div>
     </div>
   );

@@ -4,8 +4,8 @@ import { useState } from "react";
 import { MapFilters, MultiSelectOption } from "@/lib/airtable/types";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { FilterIcon } from "lucide-react";
 import { Label } from "./ui/label";
+import { SlidersHorizontal } from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -16,7 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { useIsTablet } from "./hooks/use-tablet";
 import MultiSelect from "./ui/multi-select";
 
 interface FilterProps {
@@ -27,22 +26,29 @@ interface FilterProps {
   maxYear: number;
 }
 
-export default function Filters({
+function filtersResetKey(f: MapFilters): string {
+  return [
+    [...f.countries].sort().join(","),
+    [...f.bodiesOfWater].sort().join(","),
+    f.startYear,
+    f.endYear,
+  ].join("|");
+}
+
+function FiltersForm({
   filters,
   minYear,
   maxYear,
   countryOptions,
   bodiesOfWaterOptions,
 }: FilterProps) {
-  const isTablet = useIsTablet();
-
   const [selectedCountry, setSelectedCountry] = useState<string[]>(
     filters.countries
   );
   const [selectedWater, setSelectedWater] = useState<string[]>(
     filters.bodiesOfWater
   );
-  const [filtersOpen, setOpenFilters] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [startYear, setStartYear] = useState(filters.startYear || "");
   const [endYear, setEndYear] = useState(filters.endYear || "");
 
@@ -62,104 +68,87 @@ export default function Filters({
       newParams.append("end_year", "" + endYear);
     }
 
-    setOpenFilters(false);
+    setFiltersOpen(false);
     history.pushState({}, "", `/?${newParams.toString()}`);
   };
 
-  const filterInputs = (
-    <div className="flex flex-col lg:flex-row gap-3 md:gap-6 lg:gap-3 flex-wrap">
-      <MultiSelect
-        values={countryOptions}
-        label="Countries"
-        onSelect={setSelectedCountry}
-        selectedOptions={selectedCountry}
-      />
-
-      <MultiSelect
-        values={bodiesOfWaterOptions}
-        label="Bodies of Water"
-        onSelect={setSelectedWater}
-        selectedOptions={selectedWater}
-      />
-
-      <div className="flex flex-col gap-1 no-wrap">
-        <Label>Date Range</Label>
-        <div className="flex gap-1 items-center">
-          <Input
-            value={startYear}
-            min={minYear}
-            max={maxYear}
-            onChange={(e) => setStartYear(e.target.value)}
-            aria-label="From year"
-            type="number"
-            placeholder="Start Year"
-            className="min-w-28 text-base"
-          />
-          -
-          <Input
-            value={endYear}
-            min={minYear}
-            max={maxYear}
-            onChange={(e) => setEndYear(e.target.value)}
-            type="number"
-            aria-label="Filter by latest release year"
-            placeholder="To year"
-            className="min-w-28 text-base"
-          />
-        </div>
-      </div>
-    </div>
-  );
-
   return (
-    <>
-      {!isTablet ? (
-        <div className="flex items-end gap-2">
-          {filterInputs}
+    <Dialog open={filtersOpen} onOpenChange={setFiltersOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="lg"
+          className="rounded-full px-6 shadow-md bg-background text-base"
+          aria-label="Open filters"
+        >
+          <SlidersHorizontal className="h-5 w-5" />
+          Filters
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Filters</DialogTitle>
+          <DialogDescription>
+            Filter media points shown on the map. Click apply when you are done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <MultiSelect
+            values={countryOptions}
+            label="Countries"
+            onSelect={setSelectedCountry}
+            selectedOptions={selectedCountry}
+          />
+
+          <MultiSelect
+            values={bodiesOfWaterOptions}
+            label="Bodies of Water"
+            onSelect={setSelectedWater}
+            selectedOptions={selectedWater}
+          />
+
+          <div className="flex flex-col gap-1">
+            <Label>Date Range</Label>
+            <div className="flex gap-1 items-center">
+              <Input
+                value={startYear}
+                min={minYear}
+                max={maxYear}
+                onChange={(e) => setStartYear(e.target.value)}
+                aria-label="From year"
+                type="number"
+                placeholder="Start Year"
+                className="min-w-28 text-base"
+              />
+              -
+              <Input
+                value={endYear}
+                min={minYear}
+                max={maxYear}
+                onChange={(e) => setEndYear(e.target.value)}
+                type="number"
+                aria-label="Filter by latest release year"
+                placeholder="To year"
+                className="min-w-28 text-base"
+              />
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline" aria-label="Cancel">
+              Cancel
+            </Button>
+          </DialogClose>
           <Button onClick={handleApplyFilters} aria-label="Apply filters">
             Apply
           </Button>
-        </div>
-      ) : (
-        <Dialog open={filtersOpen} onOpenChange={setOpenFilters}>
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              aria-label="Open filters"
-              className="h-[38px]"
-            >
-              <FilterIcon />
-            </Button>
-          </DialogTrigger>
-          <DialogContent
-            onInteractOutside={(e) => e.preventDefault()}
-            id="mobile-dialog-container"
-          >
-            <DialogHeader>
-              <DialogTitle>Map Filter</DialogTitle>
-              <DialogDescription>
-                Filter media points shown on map. Click apply filters when you
-                are done.
-              </DialogDescription>
-            </DialogHeader>
-            {filterInputs}
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline" aria-label="Cancel">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button
-                type="submit"
-                onClick={handleApplyFilters}
-                aria-label="Apply filters"
-              >
-                Apply filters
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
+}
+
+export function Filters(props: FilterProps) {
+  return <FiltersForm key={filtersResetKey(props.filters)} {...props} />;
 }

@@ -85,6 +85,14 @@ export function addQueryParameter(
   return `?${params.toString()}`;
 }
 
+/** URL query parameter keys used for map filters */
+export const FILTER_PARAMS = [
+  "country",
+  "body_of_water",
+  "start_year",
+  "end_year",
+] as const;
+
 export function hasActiveFilters(filters: MapFilters): boolean {
   return (
     filters.countries.length > 0 ||
