@@ -18,7 +18,6 @@ interface MapContainerProps {
   mediaPoints: MediaLocation[];
 }
 
-const DRAWER_WIDTH_STORAGE_KEY = "mp-drawer-width-px";
 const MIN_DRAWER_WIDTH_PX = 280;
 /** Matches previous `w-80` / `w-96` split at Tailwind’s default `lg` (1024px). */
 const LG_BREAKPOINT_PX = 1024;
@@ -56,8 +55,8 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyle>("standard");
   const [searchValue, setSearchValue] = useState("");
-  const [drawerWidthPx, setDrawerWidthPx] = useState(
-    DEFAULT_DRAWER_WIDTH_WIDE_PX
+  const [drawerWidthPx, setDrawerWidthPx] = useState(() =>
+    clampDrawerWidthPx(defaultDrawerWidthForViewport())
   );
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const isTablet = useIsTablet();
@@ -77,22 +76,6 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   }, [drawerWidthPx, drawerOpen, isTablet]);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(DRAWER_WIDTH_STORAGE_KEY);
-      if (raw != null) {
-        const n = parseInt(raw, 10);
-        if (!Number.isNaN(n)) {
-          setDrawerWidthPx(clampDrawerWidthPx(n));
-          return;
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-    setDrawerWidthPx(clampDrawerWidthPx(defaultDrawerWidthForViewport()));
-  }, []);
-
-  useEffect(() => {
     function onResize() {
       setDrawerWidthPx((w) => clampDrawerWidthPx(w));
     }
@@ -105,14 +88,7 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   }, []);
 
   const handleDrawerWidthCommit = useCallback((w: number) => {
-    try {
-      localStorage.setItem(
-        DRAWER_WIDTH_STORAGE_KEY,
-        String(clampDrawerWidthPx(w))
-      );
-    } catch {
-      /* ignore */
-    }
+    setDrawerWidthPx(clampDrawerWidthPx(w));
   }, []);
 
   const handleMapReady = useCallback((mapInstance: mapboxgl.Map) => {
