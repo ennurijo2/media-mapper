@@ -67,12 +67,14 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   useEffect(() => {
     if (isTablet) return;
     if (!mapInstanceRef.current) return;
-    if (!drawerOpen) return;
 
-    const id = window.requestAnimationFrame(() => {
-      mapInstanceRef.current?.resize();
+    const id1 = window.requestAnimationFrame(() => {
+      const id2 = window.requestAnimationFrame(() => {
+        mapInstanceRef.current?.resize();
+      });
+      return () => window.cancelAnimationFrame(id2);
     });
-    return () => window.cancelAnimationFrame(id);
+    return () => window.cancelAnimationFrame(id1);
   }, [drawerWidthPx, drawerOpen, isTablet]);
 
   useEffect(() => {
