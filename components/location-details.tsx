@@ -77,7 +77,7 @@ export function LocationDetails({
           </div>
 
           {selectedMediaPoint?.media?.image?.url && (
-            <div className="relative w-full h-[30vh] min-h-[160px] max-h-[320px] overflow-hidden rounded bg-muted">
+            <div className="relative w-full h-[26vh] min-h-[160px] max-h-[320px] overflow-hidden rounded bg-muted">
               <Image
                 src={selectedMediaPoint.media.image.url || ""}
                 alt={`Image from ${
