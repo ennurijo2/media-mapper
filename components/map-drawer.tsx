@@ -49,23 +49,18 @@ export function MapDrawer({
   const startResize = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
-
       const startX = event.clientX;
       const startW = drawerWidthPx;
-
       function onMove(moveEvent: MouseEvent) {
         const delta = moveEvent.clientX - startX;
         onDrawerWidthChange(startW + delta);
       }
-
       function onUp(moveEvent: MouseEvent) {
         window.removeEventListener("mousemove", onMove);
         window.removeEventListener("mouseup", onUp);
-
         const delta = moveEvent.clientX - startX;
         onDrawerWidthCommit(startW + delta);
       }
-
       window.addEventListener("mousemove", onMove);
       window.addEventListener("mouseup", onUp);
     },
@@ -257,7 +252,7 @@ export function MapDrawer({
       tabIndex={-1}
       role="region"
       aria-label={selectedMediaPoint ? "Location details" : "Search results"}
-      className="absolute top-0 left-0 bottom-0 z-10 bg-background flex flex-col shadow-lg focus:outline-none min-w-0 overflow-hidden"
+      className="relative h-full z-10 bg-background flex flex-col shadow-lg focus:outline-none min-w-0 overflow-hidden"
       style={{ width: drawerWidthPx }}
     >
       {drawerContent}
