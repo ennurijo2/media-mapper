@@ -5,7 +5,7 @@ import { ENABLE_REGION_FILTER } from "@/lib/feature-flags";
 import { cn, computeMapBounds } from "@/lib/utils";
 import { matchesSearch } from "@/lib/search";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Map } from "@/components/map";
 import { STYLES, MapStyle, takeScreenshot } from "@/lib/map-utils";
 import { MapDrawer } from "./map-drawer";
@@ -16,6 +16,30 @@ import { TooltipProvider } from "./ui/tooltip";
 
 interface MapContainerProps {
   mediaPoints: MediaLocation[];
+}
+
+const DRAWER_WIDTH_STORAGE_KEY = "mp-drawer-width-px";
+const MIN_DRAWER_WIDTH_PX = 280;
+/** Matches previous `w-80` / `w-96` split at Tailwind’s default `lg` (1024px). */
+const LG_BREAKPOINT_PX = 1024;
+const DEFAULT_DRAWER_WIDTH_NARROW_PX = 320;
+const DEFAULT_DRAWER_WIDTH_WIDE_PX = 384;
+
+function defaultDrawerWidthForViewport(): number {
+  if (typeof window === "undefined") return DEFAULT_DRAWER_WIDTH_WIDE_PX;
+  return window.innerWidth >= LG_BREAKPOINT_PX
+    ? DEFAULT_DRAWER_WIDTH_WIDE_PX
+    : DEFAULT_DRAWER_WIDTH_NARROW_PX;
+}
+
+function maxDrawerWidthPx(): number {
+  if (typeof window === "undefined") return DEFAULT_DRAWER_WIDTH_WIDE_PX * 2;
+  return Math.floor(window.innerWidth * 0.5);
+}
+
+function clampDrawerWidthPx(w: number): number {
+  const max = maxDrawerWidthPx();
+  return Math.min(max, Math.max(MIN_DRAWER_WIDTH_PX, Math.round(w)));
 }
 
 /*
@@ -32,8 +56,50 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyle>("standard");
   const [searchValue, setSearchValue] = useState("");
+  const [drawerWidthPx, setDrawerWidthPx] = useState(
+    DEFAULT_DRAWER_WIDTH_WIDE_PX
+  );
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const isTablet = useIsTablet();
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAWER_WIDTH_STORAGE_KEY);
+      if (raw != null) {
+        const n = parseInt(raw, 10);
+        if (!Number.isNaN(n)) {
+          setDrawerWidthPx(clampDrawerWidthPx(n));
+          return;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    setDrawerWidthPx(clampDrawerWidthPx(defaultDrawerWidthForViewport()));
+  }, []);
+
+  useEffect(() => {
+    function onResize() {
+      setDrawerWidthPx((w) => clampDrawerWidthPx(w));
+    }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const handleDrawerWidthChange = useCallback((w: number) => {
+    setDrawerWidthPx(clampDrawerWidthPx(w));
+  }, []);
+
+  const handleDrawerWidthCommit = useCallback((w: number) => {
+    try {
+      localStorage.setItem(
+        DRAWER_WIDTH_STORAGE_KEY,
+        String(clampDrawerWidthPx(w))
+      );
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const handleMapReady = useCallback((mapInstance: mapboxgl.Map) => {
     mapInstanceRef.current = mapInstance;
@@ -142,13 +208,18 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
           onSearchChange={setSearchValue}
           isOpen={drawerOpen}
           onToggle={handleDrawerToggle}
+          drawerWidthPx={drawerWidthPx}
+          onDrawerWidthChange={handleDrawerWidthChange}
+          onDrawerWidthCommit={handleDrawerWidthCommit}
         />
         <TooltipProvider>
           <div
             className={cn(
-              "absolute top-3 z-20 max-sm:left-3 sm:left-1/2 sm:-translate-x-1/2",
-              !isTablet && drawerOpen && "pl-96"
+              "absolute top-3 z-20 max-sm:left-3 sm:left-1/2 sm:-translate-x-1/2"
             )}
+            style={
+              !isTablet && drawerOpen ? { paddingLeft: drawerWidthPx } : undefined
+            }
           >
             <MapToolbar
               filters={filters}
