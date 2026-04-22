@@ -62,6 +62,20 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const isTablet = useIsTablet();
 
+  // When the drawer width changes (desktop), the map container width changes too.
+  // Mapbox needs an explicit resize() so the map recenters in the available area
+  // without changing zoom/orientation.
+  useEffect(() => {
+    if (isTablet) return;
+    if (!mapInstanceRef.current) return;
+    if (!drawerOpen) return;
+
+    const id = window.requestAnimationFrame(() => {
+      mapInstanceRef.current?.resize();
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [drawerWidthPx, drawerOpen, isTablet]);
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(DRAWER_WIDTH_STORAGE_KEY);
@@ -193,43 +207,97 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
 
   return (
     <div className="w-full relative h-[calc(100vh-4rem)]">
-      <div className="relative w-full h-full overflow-hidden">
-        <Map
-          data={searchedMediaPoints}
-          bounds={mapBounds}
-          filters={filters}
-          styleUrl={STYLES[mapStyle]}
-          onMapReady={handleMapReady}
-        />
-        <MapDrawer
-          searchedMediaPoints={searchedMediaPoints}
-          allMediaPoints={mediaPoints}
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          isOpen={drawerOpen}
-          onToggle={handleDrawerToggle}
-          drawerWidthPx={drawerWidthPx}
-          onDrawerWidthChange={handleDrawerWidthChange}
-          onDrawerWidthCommit={handleDrawerWidthCommit}
-        />
-        <TooltipProvider>
-          <div
-            className={cn(
-              "absolute top-3 z-20 max-sm:left-3 sm:left-1/2 sm:-translate-x-1/2"
-            )}
-            style={
-              !isTablet && drawerOpen ? { paddingLeft: drawerWidthPx } : undefined
-            }
-          >
-            <MapToolbar
-              filters={filters}
-              mediaPoints={mediaPoints}
-              onScreenshot={handleScreenshot}
+      {isTablet ? (
+        // Mobile/tablet: map full-bleed with overlay bottom-sheet drawer
+        <div className="relative w-full h-full overflow-hidden">
+          <Map
+            data={searchedMediaPoints}
+            bounds={mapBounds}
+            filters={filters}
+            styleUrl={STYLES[mapStyle]}
+            onMapReady={handleMapReady}
+          />
+          <MapDrawer
+            searchedMediaPoints={searchedMediaPoints}
+            allMediaPoints={mediaPoints}
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            isOpen={drawerOpen}
+            onToggle={handleDrawerToggle}
+            drawerWidthPx={drawerWidthPx}
+            onDrawerWidthChange={handleDrawerWidthChange}
+            onDrawerWidthCommit={handleDrawerWidthCommit}
+          />
+          <TooltipProvider>
+            <div
+              className={cn(
+                "absolute top-3 z-20 max-sm:left-3 sm:left-1/2 sm:-translate-x-1/2"
+              )}
+            >
+              <MapToolbar
+                filters={filters}
+                mediaPoints={mediaPoints}
+                onScreenshot={handleScreenshot}
+              />
+            </div>
+            <BasemapToggle mapStyle={mapStyle} onToggle={handleBasemapToggle} />
+          </TooltipProvider>
+        </div>
+      ) : (
+        // Desktop: true split view so the map stays fully visible
+        <div className="w-full h-full overflow-hidden flex">
+          {drawerOpen ? (
+            <MapDrawer
+              searchedMediaPoints={searchedMediaPoints}
+              allMediaPoints={mediaPoints}
+              searchValue={searchValue}
+              onSearchChange={setSearchValue}
+              isOpen={drawerOpen}
+              onToggle={handleDrawerToggle}
+              drawerWidthPx={drawerWidthPx}
+              onDrawerWidthChange={handleDrawerWidthChange}
+              onDrawerWidthCommit={handleDrawerWidthCommit}
             />
+          ) : null}
+          <div className="relative flex-1 min-w-0">
+            <Map
+              data={searchedMediaPoints}
+              bounds={mapBounds}
+              filters={filters}
+              styleUrl={STYLES[mapStyle]}
+              onMapReady={handleMapReady}
+            />
+            <TooltipProvider>
+              <div className="absolute top-3 z-20 left-1/2 -translate-x-1/2">
+                <MapToolbar
+                  filters={filters}
+                  mediaPoints={mediaPoints}
+                  onScreenshot={handleScreenshot}
+                />
+              </div>
+              <BasemapToggle
+                mapStyle={mapStyle}
+                onToggle={handleBasemapToggle}
+              />
+            </TooltipProvider>
+
+            {/* When closed, render the open button overlaying the map. */}
+            {!drawerOpen ? (
+              <MapDrawer
+                searchedMediaPoints={searchedMediaPoints}
+                allMediaPoints={mediaPoints}
+                searchValue={searchValue}
+                onSearchChange={setSearchValue}
+                isOpen={drawerOpen}
+                onToggle={handleDrawerToggle}
+                drawerWidthPx={drawerWidthPx}
+                onDrawerWidthChange={handleDrawerWidthChange}
+                onDrawerWidthCommit={handleDrawerWidthCommit}
+              />
+            ) : null}
           </div>
-          <BasemapToggle mapStyle={mapStyle} onToggle={handleBasemapToggle} />
-        </TooltipProvider>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
