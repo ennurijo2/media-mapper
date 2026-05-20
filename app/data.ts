@@ -63,6 +63,7 @@ export async function getMediaPoints() {
         city: fields.city,
         region: fields.region,
         country: fields.country,
+        media_id: mediaId,
         media: mediaId ? mediaMap.get(mediaId) : undefined,
       };
     });
