@@ -1,7 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
+<ReactMarkdown rehypePlugins={[rehypeRaw]}>{source}</ReactMarkdown>
 import { cn } from "@/lib/utils";
 
 /** Remove YAML frontmatter from B5 index.md (lines between --- ... ---). */
