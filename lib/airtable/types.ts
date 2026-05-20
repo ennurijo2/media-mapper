@@ -73,3 +73,18 @@ export interface WebAppMetadata {
   getting_started_dialog_enabled?: boolean;
   getting_started_dialog_version?: string;
 }
+
+/** Raw collection row from Airtable (after convertKeysToSnakeCase). */
+export interface Collection {
+  /** Airtable record id (set in getCollections, not from fields). */
+  id: string;
+  title: string;
+  body_repo_slug: string;
+  published?: boolean;
+  sort_order?: number;
+  teaser?: string;
+  /** Linked record ids → Media table */
+  linked_media?: string[];
+  /** Linked record ids → Media Locations table */
+  linked_media_locations?: string[];
+}
