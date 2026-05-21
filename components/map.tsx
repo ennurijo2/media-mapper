@@ -21,9 +21,17 @@ interface MapProps {
   filters: MapFilters;
   styleUrl: string;
   onMapReady?: (mapInstance: mapboxgl.Map) => void;
+  enableInitialRandomSelection?: boolean;
 }
 
-export function Map({ data, bounds, filters, styleUrl, onMapReady }: MapProps) {
+export function Map({
+  data,
+  bounds,
+  filters,
+  styleUrl,
+  onMapReady,
+  enableInitialRandomSelection = true,
+}: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -105,8 +113,9 @@ export function Map({ data, bounds, filters, styleUrl, onMapReady }: MapProps) {
 
   // Auto-select a random point on first load so the UI isn't empty.
   // Skipped if a point is already selected or filters are active.
-  useEffect(() => {
+    useEffect(() => {
     if (
+      enableInitialRandomSelection === false ||
       selectedMediaPoint ||
       !isMapLoaded ||
       data.length === 0 ||
