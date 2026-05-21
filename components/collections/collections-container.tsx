@@ -6,7 +6,7 @@ import type { Collection, MapFilters, MediaLocation } from "@/lib/airtable/types
 import { resolveLocationsForCollection } from "@/lib/collections/resolve-collection-locations";
 import { cn, computeMapBounds } from "@/lib/utils";
 import { Map } from "@/components/map";
-import { STYLES, MapStyle, takeScreenshot } from "@/lib/map-utils";
+import { STYLES, MapStyle } from "@/lib/map-utils";
 import { CollectionsDrawer } from "@/components/collections/collections-drawer";
 import { BasemapToggle } from "@/components/basemap-toggle";
 import { useIsTablet } from "@/components/hooks/use-tablet";
@@ -107,10 +107,6 @@ export default function CollectionsContainer({
     mapInstanceRef.current = map;
   }, []);
 
-  const handleScreenshot = useCallback(() => {
-    if (mapInstanceRef.current) takeScreenshot(mapInstanceRef.current);
-  }, []);
-
   const handleDrawerToggle = useCallback(() => {
     setDrawerOpen((prev) => !prev);
   }, []);
@@ -152,15 +148,6 @@ export default function CollectionsContainer({
           />
           <CollectionsDrawer {...drawerProps} />
           <TooltipProvider>
-            <div className="absolute top-3 z-20 max-sm:left-3 sm:left-1/2 sm:-translate-x-1/2">
-              <button
-                type="button"
-                className="text-xs px-2 py-1 rounded-md bg-background border shadow-sm"
-                onClick={handleScreenshot}
-              >
-                Screenshot
-              </button>
-            </div>
             <BasemapToggle mapStyle={mapStyle} onToggle={handleBasemapToggle} />
           </TooltipProvider>
         </div>
@@ -177,15 +164,6 @@ export default function CollectionsContainer({
               enableInitialRandomSelection={false}
             />
             <TooltipProvider>
-              <div className="absolute top-3 z-20 left-1/2 -translate-x-1/2">
-                <button
-                  type="button"
-                  className="text-xs px-2 py-1 rounded-md bg-background border shadow-sm"
-                  onClick={handleScreenshot}
-                >
-                  Screenshot
-                </button>
-              </div>
               <BasemapToggle mapStyle={mapStyle} onToggle={handleBasemapToggle} />
             </TooltipProvider>
             {!drawerOpen ? <CollectionsDrawer {...drawerProps} /> : null}
