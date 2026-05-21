@@ -73,11 +73,11 @@ export default function CollectionsContainer({
     return resolveLocationsForCollection(selectedCollection, allMediaPoints);
   }, [selectedCollection, allMediaPoints]);
 
-  const mapBounds = useMemo(
-    () => computeMapBounds(collectionLocations),
-    [collectionLocations]
+   const mapBounds = useMemo(
+    () => computeMapBounds(allMediaPoints),
+    [allMediaPoints]
   );
-
+  
   useEffect(() => {
     if (isTablet) return;
     if (!mapInstanceRef.current) return;
