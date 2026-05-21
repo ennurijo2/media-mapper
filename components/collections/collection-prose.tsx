@@ -1,7 +1,6 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
-<ReactMarkdown rehypePlugins={[rehypeRaw]}>{source}</ReactMarkdown>
 import { cn } from "@/lib/utils";
 
 /** Remove YAML frontmatter from B5 index.md (lines between --- ... ---). */
@@ -40,7 +39,7 @@ export function CollectionProse({ markdown, className }: CollectionProseProps) {
         className
       )}
     >
-      <ReactMarkdown rehypePlugins={[rehypeRaw]}>{source}</ReactMarkdown>
+      <ReactMarkdown>{source}</ReactMarkdown>
     </div>
   );
 }
