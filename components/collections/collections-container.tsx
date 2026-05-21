@@ -25,12 +25,12 @@ const EMPTY_FILTERS: MapFilters = {
   endYear: "",
 };
 
-function defaultDrawerWidthForViewport(): number {
+/** Collections view: left panel starts at 40% of the window (map view keeps narrower defaults). */
+function defaultCollectionsDrawerWidthPx(): number {
   if (typeof window === "undefined") return DEFAULT_DRAWER_WIDTH_WIDE_PX;
-  return window.innerWidth >= LG_BREAKPOINT_PX
-    ? DEFAULT_DRAWER_WIDTH_WIDE_PX
-    : DEFAULT_DRAWER_WIDTH_NARROW_PX;
+  return Math.floor(window.innerWidth * 0.4);
 }
+
 
 function maxDrawerWidthPx(): number {
   if (typeof window === "undefined") return DEFAULT_DRAWER_WIDTH_WIDE_PX * 2;
@@ -59,7 +59,7 @@ export default function CollectionsContainer({
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyle>("standard");
   const [drawerWidthPx, setDrawerWidthPx] = useState(() =>
-    clampDrawerWidthPx(defaultDrawerWidthForViewport())
+    clampDrawerWidthPx(defaultCollectionsDrawerWidthPx())
   );
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const isTablet = useIsTablet();
