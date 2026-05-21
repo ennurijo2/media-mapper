@@ -100,11 +100,7 @@ export const getWebAppMetadata = cache(async (): Promise<WebAppMetadata> => {
 });
 
 export async function getCollections(): Promise<Collection[]> {
-  const records = await base(COLLECTIONS_TABLE_NAME)
-    .select({
-      view: process.env.AIRTABLE_VIEW_NAME,
-    })
-    .all();
+  const records = await base(COLLECTIONS_TABLE_NAME).select().all();
 
   return records
     .map((record) => {
