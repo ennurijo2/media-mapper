@@ -26,9 +26,7 @@ const DEFAULT_DRAWER_WIDTH_WIDE_PX = 384;
 
 function defaultDrawerWidthForViewport(): number {
   if (typeof window === "undefined") return DEFAULT_DRAWER_WIDTH_WIDE_PX;
-  return window.innerWidth >= LG_BREAKPOINT_PX
-    ? DEFAULT_DRAWER_WIDTH_WIDE_PX
-    : DEFAULT_DRAWER_WIDTH_NARROW_PX;
+  return Math.floor(window.innerWidth * 0.4);
 }
 
 function maxDrawerWidthPx(): number {
