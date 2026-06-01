@@ -53,10 +53,9 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyle>("standard");
   const [searchValue, setSearchValue] = useState("");
-   const [drawerWidthPx, setDrawerWidthPx] = useState(() =>
-    clampDrawerWidthPx(defaultDrawerWidthForViewport())
-  );
-
+  // Start at 0 = "no measured pixel width yet" so the server/first paint uses the
+  // CSS 40vw default in the drawer. The layout effect below fills in real pixels.
+  const [drawerWidthPx, setDrawerWidthPx] = useState(0);
   // On the client, recompute from the real viewport before the browser paints,
   // so the server fallback width never flashes on a hard page load.
   useLayoutEffect(() => {
