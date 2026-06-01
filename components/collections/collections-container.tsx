@@ -25,7 +25,7 @@ const EMPTY_FILTERS: MapFilters = {
   endYear: "",
 };
 
-/** Collections view: left panel starts at 40% of the window (map view keeps narrower defaults). */
+/** Collections view: left panel starts at 40% of the window (map view was edited to be the same). */
 function defaultCollectionsDrawerWidthPx(): number {
   if (typeof window === "undefined") return DEFAULT_DRAWER_WIDTH_WIDE_PX;
   return Math.floor(window.innerWidth * 0.4);
