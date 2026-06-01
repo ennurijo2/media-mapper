@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Collection, MapFilters, MediaLocation } from "@/lib/airtable/types";
 import { resolveLocationsForCollection } from "@/lib/collections/resolve-collection-locations";
@@ -61,6 +61,10 @@ export default function CollectionsContainer({
   const [drawerWidthPx, setDrawerWidthPx] = useState(() =>
     clampDrawerWidthPx(defaultCollectionsDrawerWidthPx())
   );
+
+  useLayoutEffect(() => {
+    setDrawerWidthPx(clampDrawerWidthPx(defaultCollectionsDrawerWidthPx()));
+  }, []);
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const isTablet = useIsTablet();
 
