@@ -5,7 +5,7 @@ import { ENABLE_REGION_FILTER } from "@/lib/feature-flags";
 import { cn, computeMapBounds } from "@/lib/utils";
 import { matchesSearch } from "@/lib/search";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Map } from "@/components/map";
 import { STYLES, MapStyle, takeScreenshot } from "@/lib/map-utils";
 import { MapDrawer } from "./map-drawer";
@@ -53,9 +53,15 @@ export default function MapContainer({ mediaPoints }: MapContainerProps) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [mapStyle, setMapStyle] = useState<MapStyle>("standard");
   const [searchValue, setSearchValue] = useState("");
-  const [drawerWidthPx, setDrawerWidthPx] = useState(() =>
+   const [drawerWidthPx, setDrawerWidthPx] = useState(() =>
     clampDrawerWidthPx(defaultDrawerWidthForViewport())
   );
+
+  // On the client, recompute from the real viewport before the browser paints,
+  // so the server fallback width never flashes on a hard page load.
+  useLayoutEffect(() => {
+    setDrawerWidthPx(clampDrawerWidthPx(defaultDrawerWidthForViewport()));
+  }, []);
   const mapInstanceRef = useRef<mapboxgl.Map | null>(null);
   const isTablet = useIsTablet();
 
